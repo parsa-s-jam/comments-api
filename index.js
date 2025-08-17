@@ -16,13 +16,12 @@ app.get("/comments", (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const perPage = parseInt(req.query.perPage) || 20;
 
-    // Ensure data is an array
-    const items = Array.isArray(data) ? data : [];
+    // If data has `comments`, use that array
+    const items = Array.isArray(data) ? data : data.comments || [];
 
     const totalItems = items.length;
     const totalPages = Math.ceil(totalItems / perPage);
 
-    // Slice for pagination
     const start = (page - 1) * perPage;
     const end = start + perPage;
     const paginatedItems = items.slice(start, end);
