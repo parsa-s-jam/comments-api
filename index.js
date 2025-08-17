@@ -12,7 +12,28 @@ app.get("/", (req, res) => {
 
 // JSON endpoint
 app.get("/comments", (req, res) => {
-  res.json(data);
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 20;
+
+  const items = data; // since data.json is a raw array
+
+  const totalItems = items.length;
+  const totalPages = Math.ceil(totalItems / perPage);
+
+  // Slice for pagination
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+  const paginatedItems = items.slice(start, end);
+
+  res.json({
+    items: paginatedItems,
+    meta: {
+      currentPage: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: totalItems,
+    },
+  });
 });
 
 app.listen(PORT, () => {
