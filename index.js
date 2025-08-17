@@ -12,28 +12,34 @@ app.get("/", (req, res) => {
 
 // JSON endpoint
 app.get("/comments", (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const perPage = parseInt(req.query.perPage) || 20;
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.perPage) || 20;
 
-  const items = data; // since data.json is a raw array
+    // Ensure data is an array
+    const items = Array.isArray(data) ? data : [];
 
-  const totalItems = items.length;
-  const totalPages = Math.ceil(totalItems / perPage);
+    const totalItems = items.length;
+    const totalPages = Math.ceil(totalItems / perPage);
 
-  // Slice for pagination
-  const start = (page - 1) * perPage;
-  const end = start + perPage;
-  const paginatedItems = items.slice(start, end);
+    // Slice for pagination
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const paginatedItems = items.slice(start, end);
 
-  res.json({
-    items: paginatedItems,
-    meta: {
-      currentPage: page,
-      perPage: perPage,
-      totalPages: totalPages,
-      totalItems: totalItems,
-    },
-  });
+    res.json({
+      items: paginatedItems,
+      meta: {
+        currentPage: page,
+        perPage: perPage,
+        totalPages: totalPages,
+        totalItems: totalItems,
+      },
+    });
+  } catch (err) {
+    console.error("Error in /comments:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.listen(PORT, () => {
